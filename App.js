@@ -1,70 +1,123 @@
 import { useState } from "react";
 import {
+  Alert,
   Button,
   FlatList,
   Linking,
+  Modal,
+  Pressable,
   RefreshControl,
   ScrollView,
+  SectionList,
   StyleSheet,
   Text,
   TextInput,
+  ToastAndroid,
+  TouchableOpacity,
   View,
 } from "react-native";
 
 export default function App() {
-  const [items, setItems] = useState([
-    { text: "1" },
-    { text: "2" },
-    { text: "3" },
-    { text: "4" },
-    { text: "4" },
-    { text: "6" },
-    { text: "7" },
-    { text: "8" },
-    { text: "9" },
-    { text: "10" },
-    { text: "11" },
-  ]);
-  const [refresh, seRefresh] = useState(false);
+  const [name, setName] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
-  const pageRefresh = () => {
-    seRefresh(true);
-    setItems([...items, { text: "12" }]);
-    seRefresh(false);
-    // };
+  //modal warnign
+  const [showWarning, setshowWarning] = useState(false);
+  const onPressHandler = () => {
+    if (name.length > 3) {
+      setSubmitted(!submitted);
+    } else {
+      setshowWarning(true);
+
+      // Alert.alert("Warning", "Name Length must be greater than 3", [
+      //   {
+      //     text: "OK", onPress: () => console.warn("OK button pressed"),
+      //   }
+      // ], {
+      //   cancelable: true,
+      //   onDismiss: () => console.warn("Alert Dismissed")
+      // })
+    }
   };
   return (
-    <FlatList
+    <View style={styles.body}>
+      <Text>Enter your name:{name}</Text>
+      <TextInput
+        onChangeText={(name) => setName(name)}
+        style={styles.textInput}
+      />
 
-      keyExtractor={(item, index) => index.toString()}
-      data={items}
-      renderItem={({ item }) => (
-        <View style={styles.items}>
-          <Text style={styles.items}>{item.text}</Text>
+      <Modal visible={showWarning} onRequestClose={() => setshowWarning(false)} >
+        <View style={styles.view_warning_modal}>
+          <View style={styles.warning_modal}>
+            <View style={styles.warning_modal_title}>
+              <Text style={{ fontSize: 20, margin: 10 }}>Warning!!</Text>
+            </View>
+            <Text style={{ padding: 20, textAlign: "center" }}>The Name must be longer than 3 characters</Text>
+          </View>
         </View>
-      )}
-      refreshControl={
-        <RefreshControl refreshing={refresh} onRefresh={pageRefresh} />
-      }
-    />
+      </Modal>
+
+      <Pressable
+        style={styles.touchable}
+        onPress={onPressHandler}
+        hitSlop={{ top: 100, right: 10, bottom: 10, left: 10 }}
+        android_ripple={{ color: "purple" }}
+      >
+        <Text style={{ textAlign: "center", color: "white" }}>
+          {name.length === 0 ? "Submit" : "OK"}
+        </Text>
+      </Pressable>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#fff",
+  body: {
     flex: 1,
-    flexDirection: "column",
-  },
-  items: {
-    backgroundColor: "purple",
-    margin: 10,
-    padding: 20,
-    maxWidth: "200",
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
   },
   text: {
-    color: "white",
-    fontSize: 20,
-    fontStyle: "italic",
+    fontSize: 15,
+    fontWeight: "600",
   },
+  textInput: {
+    borderWidth: 1,
+    borderColor: "black",
+    width: "70%",
+    fontSize: 15,
+    padding: 10,
+    margin: 10,
+  },
+  touchable: {
+    backgroundColor: "green",
+    padding: 10,
+    margin: 30,
+    width: "50%",
+    collor: "purple",
+  },
+  warning_modal: {
+    width: 300,
+    height: 300,
+
+    backgroundColor: "white",
+    borderWidth: 10,
+    borderColor: "#000",
+    borderRadius: 20,
+  },
+
+  view_warning_modal: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+
+  },
+  warning_modal_title: {
+    height: 50,
+    alignContent: "center",
+    alignItems: "center",
+    backgroundColor: "brown"
+  }
 });
